@@ -1,0 +1,17 @@
+# Ignore all node_modules folders recursively
+**/node_modules/
+
+# Ignore all .env files recursively
+**/.env
+**/.env.*
+
+# Optional: Ignore common logs and build files too
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+dist/
+build/
+.out/
+.next/
