@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { StrapiImage } from "./StrapiImage";
 
 interface ImageProps {
     id: number;
@@ -28,13 +29,10 @@ interface HeroSectionProps {
 
 export function HeroSection({ data }: Readonly<HeroSectionProps>) {
     const { heading, subHeading, image, Link: linkData } = data;
-    console.log({ image });
-
-    const imageURL = 'http://localhost:5000' + image.url;
 
     return (
         <header className="relative h-[600px] overflow-hidden">
-            <img
+            {/* <img
                 alt="Background"
                 className="absolute inset-0 object-cover w-full h-full"
                 height={1080}
@@ -44,6 +42,13 @@ export function HeroSection({ data }: Readonly<HeroSectionProps>) {
                     objectFit: "cover",
                 }}
                 width={1920}
+            /> */}
+            <StrapiImage
+                src={image.url}
+                alt={image.alternativeText}
+                height={600}
+                width={1920}
+                className="absolute inset-0 object-cover w-full h-full"
             />
             <div
                 className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white bg-opacity-20"

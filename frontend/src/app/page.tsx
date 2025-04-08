@@ -1,26 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HeroSection } from "@/components/custom/HeroSection";
-import { flattenAttributes } from "@/lib/utils";
+import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from 'qs'
+import { FeatureSection } from "@/components/custom/FeaturesSection";
 
-const homepageQuery = qs.stringify({
+const homePageQuery = qs.stringify({
   populate: {
     blocks: {
-      populate: '*'
-    }
-  }
-}, {
-  encodeValuesOnly: true,
-})
+      on: {
+        "layout.hero-section": {
+          populate: {
+            image: {
+              fields: ["url", "alternativeText"],
+            },
+            Link: {
+              populate: true,
+            },
+          },
+        },
+        "layout.features-section": {
+          populate: {
+            feature: {
+              populate: true,
+            },
+          },
+        },
+      },
+    },
+  },
+});
 
 async function getStrapiData(path: string) {
-  const baseURL = 'http://localhost:5000';
+  const baseURL = getStrapiURL();
   const url = new URL(path, baseURL);
-  url.search = homepageQuery;
+  url.search = homePageQuery;
   const strapiURL = url.toString();
+  console.log(strapiURL);
+
 
   try {
     const res = await fetch(strapiURL);
     const data = await res.json();
+    // console.dir(data, { depth: null });
     const flattenedData = flattenAttributes(data);
     return flattenedData;
   } catch (error) {
@@ -28,13 +49,21 @@ async function getStrapiData(path: string) {
   }
 }
 
+
+const blockComponents = {
+  "layout.hero-section": HeroSection,
+  "layout.features-section": FeatureSection,
+};
+
+function blockRenderer(block: any) {
+  const Component = blockComponents[block.__component as keyof typeof blockComponents];
+  return Component ? <Component key={block.id} data={block} /> : null;
+}
+
 export default async function Home() {
   const strapiData = await getStrapiData('/api/home-page');
-  const { blocks } = strapiData;
 
-  return (
-    <main >
-      <HeroSection data={blocks[0]} />
-    </main>
-  );
+  const { blocks } = strapiData || [];
+
+  return <main>{blocks.map(blockRenderer)}</main>;
 }
